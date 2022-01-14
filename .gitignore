@@ -1,0 +1,4 @@
+*.pkl
+large-scale/data/
+large-scale/dataset/
+*.pt

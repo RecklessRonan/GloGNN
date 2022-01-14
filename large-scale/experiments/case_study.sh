@@ -1,0 +1,1 @@
+python -u main_z.py --dataset fb100 --sub_dataset Penn94 --method mlpnorm_z --epochs 500 --hidden_channels 256 --lr 0.001 --dropout 0.5 --weight_decay 0.1 --alpha 0.0 --beta 1.0 --gamma 0.5 --delta 0.5 --norm_func_id 2 --norm_layers 2 --orders_func_id 2 --orders 2 --display_step 1 --runs 1 

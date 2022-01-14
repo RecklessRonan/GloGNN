@@ -1,0 +1,47 @@
+nohup: ignoring input
+Using backend: pytorch
+Namespace(SGD=False, adam=False, alpha=0.0, beta=1.0, cached=False, cpu=False, dataset='genius', decay_rate=1.0, delta=0.0, directed=False, display_step=1, dropout=0.0, epochs=500, exponent=3.0, gamma=0.0, gat_heads=8, gcn2_alpha=0.1, gpr_alpha=0.1, hidden_channels=32, hops=1, inner_activation=False, inner_dropout=False, jk_type='max', link_init_layers_A=1, link_init_layers_X=1, lp_alpha=0.1, lr=0.01, method='h2gcn', no_bn=False, norm_func_id=2, norm_layers=1, num_layers=1, num_mlp_layers=1, orders=1, orders_func_id=2, print_prop=False, rand_split=False, rocauc=False, runs=5, sampling=False, sub_dataset='None', theta=0.5, train_prop=0.5, valid_prop=0.25, weight_decay=0.001)
+num nodes 421961 | num classes 2 | num node feats 12
+/usr/local/lib/python3.6/dist-packages/torch_sparse/storage.py:14: UserWarning: `layout` argument unset, using default layout "coo". This may lead to unexpected behaviour.
+  warnings.warn('`layout` argument unset, using default layout '
+MODEL: H2GCN(
+  (feature_embed): MLP(
+    (lins): ModuleList(
+      (0): Linear(in_features=12, out_features=32, bias=True)
+    )
+    (bns): ModuleList()
+  )
+  (convs): ModuleList(
+    (0): H2GCNConv()
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (jump): JumpingKnowledge(cat)
+  (final_project): Linear(in_features=96, out_features=2, bias=True)
+)
+Traceback (most recent call last):
+  File "main.py", line 307, in <module>
+    out = model(dataset)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/data/code/GNN-experiments/Non-Homophily-Large-Scale/models.py", line 634, in forward
+    x = self.convs[-1](x, adj_t, adj_t2)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/data/code/GNN-experiments/Non-Homophily-Large-Scale/models.py", line 534, in forward
+    x2 = matmul(adj_t2, x)
+  File "/usr/local/lib/python3.6/dist-packages/torch_sparse/matmul.py", line 137, in matmul
+    return spmm(src, other, reduce)
+  File "/usr/local/lib/python3.6/dist-packages/torch_sparse/matmul.py", line 80, in spmm
+    return spmm_sum(src, other)
+  File "/usr/local/lib/python3.6/dist-packages/torch_sparse/matmul.py", line 22, in spmm_sum
+    csr2csc = src.storage.csr2csc()
+  File "/usr/local/lib/python3.6/dist-packages/torch_sparse/storage.py", line 361, in csr2csc
+    csr2csc = idx.argsort()
+RuntimeError: CUDA out of memory. Tried to allocate 4.98 GiB (GPU 0; 31.75 GiB total capacity; 27.59 GiB already allocated; 2.69 GiB free; 27.67 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+Using backend: pytorch
+Namespace(SGD=False, adam=False, alpha=0.0, beta=1.0, cached=False, cpu=False, dataset='genius', decay_rate=1.0, delta=0.0, directed=False, display_step=1, dropout=0.5, epochs=500, exponent=3.0, gamma=0.0, gat_heads=8, gcn2_alpha=0.1, gpr_alpha=0.1, hidden_channels=32, hops=1, inner_activation=False, inner_dropout=False, jk_type='max', link_init_layers_A=1, link_init_layers_X=1, lp_alpha=0.1, lr=0.01, method='h2gcn', no_bn=False, norm_func_id=2, norm_layers=1, num_layers=1, num_mlp_layers=1, orders=1, orders_func_id=2, print_prop=False, rand_split=False, rocauc=False, runs=5, sampling=False, sub_dataset='None', theta=0.5, train_prop=0.5, valid_prop=0.25, weight_decay=0.001)
+num nodes 421961 | num classes 2 | num node feats 12
+/usr/local/lib/python3.6/dist-packages/torch_sparse/storage.py:14: UserWarning: `layout` argument unset, using default layout "coo". This may lead to unexpected behaviour.
+  warnings.warn('`layout` argument unset, using default layout '

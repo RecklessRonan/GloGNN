@@ -1,0 +1,43 @@
+tex_file = '''
+\begin{table*}[!htbp]
+\centering
+%\resizebox{0.87\linewidth}{!}{
+\caption{The classification accuracy (\%) over the methods on nine small-scale datasets released in~\cite{pei2020geom}.
+The error bar ($\pm$) denotes the standard deviation score of results over 10 trials. 
+We highlight the best score on each dataset in bold and the runner-up score with underline.
+For ACM-GCN, we rerun the experiments, 
+and show both the results and that reported by the original authors.}
+\label{tab:result_small}
+\resizebox{\linewidth}{!}
+{
+\begin{tabular}{|c|c|c|c|c|c|c||c|c|c|c|c|}
+\hline
+                    & \textbf{Texas} & \textbf{Wisconsin}     & \textbf{Cornell} & \textbf{Actor} & \textbf{Squirrel} & \textbf{Chameleon} & \textbf{Cora} & \textbf{Citeseer} & \textbf{Pubmed} &  \parbox[t]{2mm}{\multirow{5}{*}{\rotatebox[origin=c]{90}{\textbf{Avg. Rank}}}} \\
+\textbf{ Edge Hom.~\cite{zhu2020beyond}}  &   0.11    &      0.21     &  0.30  &  0.22  & 0.22  &  0.23 &  0.81 &  0.74 &  0.80 &   \\
+\textbf{\#Nodes}  &   183    &   251        &  183  &  7,600  & 5,201 & 2,277  & 2,708 & 3,327 &  19,717 &  \\
+ \textbf{\#Edges}  &    295   &    466       &  280  &  26,752  & 198,493 & 31,421  &  5,278 & 4,676  &  44,327 &   \\
+ \textbf{\#Features}  &   1,703    &    1,703       &  1,703   &  931  &  2,089 &  2,325 &  1,433 & 3,703  & 500  &   \\
+ \textbf{\#Classes} &    5   &     5      & 5  &  5  & 5 & 5  & 6 & 7  &  3  & \\ \hline   
+     MLP$^*$                   &  $80.81 \pm 4.75$  &     $85.29\pm 3.31$        &  $81.89 \pm 6.40 $  &  $36.53 \pm 0.70$  &  $28.77 \pm 1.56$ & $46.21 \pm 2.99 $  & $75.69 \pm 2.00 $  & $74.02 \pm 1.90$  & $87.16\pm 0.37$    & \\
+     GCN$^*$                    &  $55.14 \pm 5.16$    &  $51.76 \pm 3.06$          & $60.54 \pm 5.30$ & $27.32\pm 1.10$ &   $53.43\pm 2.01$  & $64.82 \pm 2.24$ & $86.98 \pm 1.27$ &  $76.50 \pm 1.36$    &  $88.42 \pm 0.50$  &\\
+     GAT$^*$                    &  $52.16 \pm 6.63$   &   $49.41 \pm 4.09$          &$61.89 \pm 5.05$ & $27.44 \pm 0.89$ &  $40.72 \pm 1.55$ &  $60.26 \pm 2.50$  & $ 87.30 \pm 1.10$ & $76.55 \pm 1.23$ & $86.33 \pm 0.48 $  &   \\    
+      MixHop$^\ddagger$               &   $77.84 \pm 7.73$   &     $ 75.88\pm 4.90$       & $73.51 \pm 6.34$ & $ 32.22\pm 2.34$ & $43.80\pm 1.48$ & $ 60.50\pm 2.53$  & $ 87.61\pm 0.85$ & $ 76.26\pm 1.33$ & $ 85.31\pm 0.61$  &    \\  
+%     GraphSAGE     & $82.43 \pm 6.14$  &  $81.18 \pm 5.56$           & $75.95\pm 5.01$& $34.23\pm 0.99$ &$41.61\pm 0.74 $  &  $58.73\pm 1.68$  & $86.90\pm 1.04$ &  $76.04 \pm 1.30$ & $88.45 \pm 0.50$ &    \\
+%     PairNorm                    &   $60.27\pm 4.34$   &   $48.43 \pm 6.14$         & $58.92 \pm 3.15$ & $27.40 \pm 1.24$ & $50.44\pm 2.04$ & $62.74 \pm 2.82$  & $85.79 \pm 1.01$ & $73.59 \pm 1.47$ &  $87.53 \pm 0.44$  &   \\
+ %    Geom-GCN                  &  $66.76 \pm 2.72$   &    $64.51 \pm 3.66$         &$60.54\pm 3.67$ & $31.59\pm 1.15$ & $38.15\pm 0.92$ &  $60.00 \pm 2.81$  & $85.35 \pm 1.57$ & $\bm{78.02 \pm 1.15}$ &  $\underline{89.95 \pm 0.47}$  & \\   
+   %  FAGCN                &  $ \pm $   &    $ \pm $         &$\pm $ & $\pm $ & $\pm $ &  $ \pm $  & $ \pm $ & $ \pm $ &  $\pm $  & \\     
+     GCN\rom{2}$^*$                 & $77.57 \pm 3.83$  &   $80.39 \pm 3.40$          & $77.86 \pm 3.79$ &  $37.44 \pm 1.30$  & $38.47 \pm 1.58$ & $63.86 \pm 3.04$  & $\bm{88.37 \pm 1.25}$ & $\underline{77.33 \pm 1.48}$ &  $\bm{90.15 \pm 0.43}$   & \\
+    H$2$GCN$^*$               &  $\underline{84.86 \pm 7.23}$    &    $\underline{87.65 \pm 4.98}$        & $82.70 \pm 5.28$ & $35.70 \pm 1.00$ & $36.48 \pm 1.86$ & $60.11\pm 2.15$  & $87.87\pm 1.20$ & $77.11\pm 1.57$  & $89.49 \pm 0.38$    &  \\ 
+    GPR-GNN$^*$              &   $78.38\pm 4.36$   &     $82.94 \pm 4.21$       & $80.27 \pm 8.11$ & $34.63 \pm 1.22$ & $31.61 \pm 1.24$ & $46.58\pm 1.71$  & $87.95 \pm 1.18$ & $77.13 \pm 1.67$ & $87.54 \pm 0.38$  &    \\ 
+    GGCN$^*$               &   $\bm{84.86 \pm 4.55}$   &     $86.86\pm 3.29$       & $\bm{85.68 \pm 6.63}$ & $ \underline{37.54 \pm 1.56}$ & $55.17\pm 1.58$ & $\bm{71.14 \pm 1.84}$  & $87.95 \pm 1.05$ & $77.14 \pm 1.45$ & $89.15 \pm 0.37$  &    \\ 
+       ACM-GCN$^{\mathsection}$               &  $ 87.84  \pm 4.40$   &     $  88.43 \pm 3.22 $       & $ 85.14 \pm 6.07 $ & $ 36.28 \pm 1.09 $ & $ 54.40  \pm 1.88 $ & $ 66.93 \pm 1.85 $  & $ 87.91 \pm 0.95 $ & $ 77.32  \pm 1.70 $ & $ 90.00 \pm 0.52$  &    \\  
+       ACM-GCN               &  $   \pm $   &     $   \pm  $       & $  \pm  $ & $  \pm  $ & $   \pm  $ & $  \pm  $  & $  \pm  $ & $   \pm  $ & $  \pm $  &    \\  
+       LINKX$^\dagger$               &   $ 74.60 \pm 8.37$   &     $75.49  \pm 5.72$       & $ 77.84 \pm 5.81$ & $ 36.10\pm 1.55$ & $\bm{61.81  \pm 1.80}$ & $ 68.42 \pm 1.38$  & $ 84.64 \pm 1.13$ & $ 73.19 \pm 0.99 $ & $ 87.86 \pm $ 0.77 &    \\  \hline
+     \ada               &   $ 84.32 \pm 4.15$   &     $87.06 \pm 3.53$       & $ 83.51 \pm 4.26$ & $ 37.35\pm 1.30$ & $ 57.54 \pm 1.39$ & $ \underline{69.78 \pm 2.42}$  & $ 88.31 \pm 1.13$ & $ \bm{77.41 \pm 1.65}$ & $ \underline{89.62 \pm 0.35}$  &    \\  
+      \ada++               &   $ 84.05  \pm 4.90$   &     $\bm{88.04 \pm 3.22}$       & $ \underline{85.95 \pm 5.10}$ & $ \bm{37.70 \pm 1.40}$ & $\underline{57.88 \pm 0.0176}$ & $ 71.21 \pm 1.84$  & $ \underline{88.33 \pm 1.09}$ & $ 77.22 \pm 1.78$ & $ 89.24\pm 0.39$  &    \\  \hline
+      
+           
+\end{tabular}
+}
+\end{table*}
+'''
