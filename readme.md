@@ -49,3 +49,14 @@ We select some important files for detailed description.
     |-- main_z.py  # obtains coefficient matrix z
     |-- main_h.py # obtains final layer embedding h
 ```
+
+## Run pipeline for big-scale datasets
+1. Entering the large-scale directory and download 6 big-scale datasets from the repository of LINKX[https://github.com/CUAI/Non-Homophily-Large-Scale]. Notice, you should rename the datasets and place them in the right directory.
+```python
+cd large-scale
+```
+
+2. You can run any models implemented in `models.py'. For examples, you can run our model on `genius' dataset by the script:
+```python
+python -u main.py --dataset genius --sub_dataset None --method mlpnorm
+```
