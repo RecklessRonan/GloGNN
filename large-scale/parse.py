@@ -1,9 +1,10 @@
 from numpy import select
-from models import LINK, GCN, MLP, MLPNORM_Z, SGC, GAT, SGCMem, MultiLP, MixHop, GCNJK, GATJK, H2GCN, APPNP_Net, LINK_Concat, LINKX, GPRGNN, GCNII, MLPNORM, GGCN, ACMGCN, MLPNORM_Z
+from models import LINK, GCN, MLP, MLPNORM_Z, SGC, GAT, SGCMem, MultiLP, MixHop, GCNJK, GATJK, H2GCN, APPNP_Net, LINK_Concat, LINKX, GPRGNN, GCNII, MLPNORM, GGCN, ACMGCN, MLPNORM_Z, WRGAT
 from data_utils import normalize
+import math
 
 
-def parse_method(args, dataset, n, c, d, device):
+def parse_method(args, dataset, n, c, d, device, num_relations):
     if args.method == 'link':
         model = LINK(n, c).to(device)
     elif args.method == 'gcn':
@@ -84,6 +85,9 @@ def parse_method(args, dataset, n, c, d, device):
     elif args.method == 'acmgcn':
         model = ACMGCN(nfeat=d, nhid=args.hidden_channels, nclass=c, dropout=args.dropout,
                        model_type='acmgcn', nlayers=args.num_layers, variant=False).to(device)
+    elif args.method == 'wrgat':
+        model = WRGAT(num_features=d, num_classes=c, num_relations=num_relations,
+                      dims=args.hidden_channels, drop=args.dropout).to(device)
     else:
         raise ValueError('Invalid method')
     return model
@@ -172,3 +176,13 @@ def parser_add_main_args(parser):
                         help='decay_rate in the decay function')
     parser.add_argument('--exponent', type=float, default=3.0,
                         help='exponent in the decay function')
+
+    # used for wrgat
+    parser.add_argument("--original_edges", default=False, action='store_true')
+    parser.add_argument("--original_edges_weight", type=float, default=1.0)
+    parser.add_argument("--filter_structure_relation",
+                        default=False, action='store_true')
+    parser.add_argument(
+        "--filter_structure_relation_number", type=int, default=10)
+    parser.add_argument("--st_thres", type=float,  default=-
+                        math.inf, help="edge weight threshold")
