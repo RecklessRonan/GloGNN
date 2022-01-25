@@ -1,0 +1,6 @@
+torch==1.10.0
+torch-geometric==2.0.2
+networkx==2.3
+scipy==1.5.4
+numpy==1.19.2
+sklearn==0.0
