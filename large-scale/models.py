@@ -1,3 +1,10 @@
+from torch_geometric.utils import remove_self_loops, add_self_loops, softmax
+from torch_sparse import masked_select_nnz
+from torch import Tensor
+from torch_geometric.nn.inits import glorot, zeros
+from torch.nn import Parameter as Param
+from torch_geometric.typing import (OptPairTensor, Adj, Size, NoneType,
+                                    OptTensor)
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -11,6 +18,7 @@ from torch.nn.parameter import Parameter
 import torch.nn.init as init
 import math
 import sys
+from typing import Union, Tuple, Optional
 
 from torch.nn.modules.module import Module
 
@@ -710,7 +718,7 @@ class LINK_Concat(nn.Module):
 
 
 class LINKX(nn.Module):
-    """ our LINKX method with skip connections 
+    """ our LINKX method with skip connections
         a = MLP_1(A), x = MLP_2(X), MLP_3(sigma(W_1[a, x] + a + x))
     """
 
@@ -1640,3 +1648,150 @@ class ACMGCN(nn.Module):
             fea = F.dropout(F.relu(fea), self.dropout, training=self.training)
             fea = self.gcns[-1](fea, adj_low, adj_high)
         return fea
+
+
+def masked_edge_index(edge_index, edge_mask):
+    if isinstance(edge_index, Tensor):
+        return edge_index[:, edge_mask]
+    else:
+        return masked_select_nnz(edge_index, edge_mask, layout='coo')
+
+
+class WeightedRGATConv(MessagePassing):
+    def __init__(self, in_channels: Union[int, Tuple[int, int]],
+                 out_channels: int,
+                 num_relations: int,
+                 aggr: str = 'mean',
+                 root_weight: bool = True,
+                 bias: bool = True, **kwargs):  # yapf: disable
+
+        super(WeightedRGATConv, self).__init__(aggr=aggr, node_dim=0, **kwargs)
+
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.num_relations = num_relations
+
+        self.use_edge_weights = True
+
+        if isinstance(in_channels, int):
+            in_channels = (in_channels, in_channels)
+        self.in_channels_l = in_channels[0]
+
+        self.atten = Parameter(torch.Tensor(num_relations, 2*out_channels))
+        self._alpha = None
+
+        self.weight = Parameter(
+            torch.Tensor(num_relations, in_channels[0], out_channels))
+
+        if root_weight:
+            self.root = Param(torch.Tensor(in_channels[1], out_channels))
+        else:
+            self.register_parameter('root', None)
+
+        if bias:
+            self.bias = Param(torch.Tensor(out_channels))
+        else:
+            self.register_parameter('bias', None)
+
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        glorot(self.weight)
+        glorot(self.root)
+        zeros(self.bias)
+        glorot(self.atten)
+
+    def forward(self, x: Union[OptTensor, Tuple[OptTensor, Tensor]],
+                edge_index: Adj, edge_weight: OptTensor = None, edge_type: OptTensor = None):
+
+        num_nodes = x.shape[0]
+
+        # Convert input features to a pair of node features or node indices.
+        x_l: OptTensor = None
+        if isinstance(x, tuple):
+            x_l = x[0]
+        else:
+            x_l = x
+        if x_l is None:
+            x_l = torch.arange(self.in_channels_l, device=self.weight.device)
+
+        x_r: Tensor = x_l
+        if isinstance(x, tuple):
+            x_r = x[1]
+
+        size = (x_l.size(0), x_r.size(0))
+
+        assert edge_type is not None
+
+        # propagate_type: (x: Tensor)
+        out = torch.zeros(x_r.size(0), self.out_channels, device=x_r.device)
+
+        weight = self.weight
+
+        # No regularization/Basis-decomposition ========================
+        for i in range(self.num_relations):
+            tmp = masked_edge_index(edge_index, edge_type == i)
+            masked_edge_weight = None if edge_weight is None else edge_weight[edge_type == i]
+            if x_l.dtype == torch.long:
+                out += self.propagate(tmp, x=weight[i, x_l],
+                                      size=size, masked_edge_weight=masked_edge_weight)
+            else:
+                x_tmp = x_l @ weight[i]
+                h = self.propagate(tmp, x=x_tmp, size=size,
+                                   atten=self.atten[i], masked_edge_weight=masked_edge_weight, rel=i, num_nodes=num_nodes)
+                # out = out + (h @ weight[i])
+                out = out + h
+
+        root = self.root
+        if root is not None:
+            out += root[x_r] if x_r.dtype == torch.long else x_r @ root
+
+        if self.bias is not None:
+            out += self.bias
+
+        return out
+
+    def message(self, rel, num_nodes, x_i, x_j, index, masked_edge_weight, atten):
+
+        x_cat = torch.cat((x_i, x_j), dim=1)
+        alpha = (atten * x_cat).sum(dim=-1)
+        alpha = F.leaky_relu(alpha, 0.2)
+        alpha = softmax(alpha, index, num_nodes=num_nodes)
+        x_j = alpha.view(-1, 1) * x_j
+
+        if self.use_edge_weights:
+            return x_j if masked_edge_weight is None else masked_edge_weight.view(-1, 1) * x_j
+        else:
+            return x_j
+
+    def __repr__(self):
+        return '{}({}, {}, num_relations={})'.format(self.__class__.__name__,
+                                                     self.in_channels,
+                                                     self.out_channels,
+                                                     self.num_relations)
+
+
+class WRGAT(torch.nn.Module):
+    def __init__(self, num_features, num_classes, num_relations, dims=16, drop=0, root=True):
+        super(WRGAT, self).__init__()
+        self.conv1 = WeightedRGATConv(
+            num_features, dims, num_relations=num_relations, root_weight=root)
+        self.conv2 = WeightedRGATConv(
+            dims, num_classes, num_relations=num_relations, root_weight=root)
+
+        self.drop = torch.nn.Dropout(p=drop)
+
+    def reset_parameters(self):
+        self.conv1.reset_parameters()
+        self.conv2.reset_parameters()
+
+    def forward(self, x, edge_index, edge_weight, edge_color):
+
+        x = F.relu(self.conv1(x, edge_index,
+                              edge_weight=edge_weight, edge_type=edge_color))
+        x = self.drop(x)
+
+        x = self.conv2(x, edge_index, edge_weight=edge_weight,
+                       edge_type=edge_color)
+
+        return x
