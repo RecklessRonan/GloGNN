@@ -66,7 +66,7 @@ python main.py --dataset genius --sub_dataset None --method acmgcn
 ```
 For more experiments running details, you can ref the running sh in the 'experiments/' directory.
 
-3. You can reproduce the experimental result of our method by run the scripts:
+3. You can reproduce the experimental results of our method by run the scripts:
 ```python
 bash run_glognn_sota_reproduce_big.sh
 bash run_glognn++_sota_reproduce_big.sh
@@ -84,11 +84,11 @@ cd small-scale
 ```python
 python main.py --no-cuda --model mlp_norm --dataset chameleon --split 0
 ```
-Notice, we run all small-scale datasets on CPU.
+Notice, we run all small-scale datasets on CPUs.
 For more experiments running details, you can ref the running sh in the 'sh/' directory.
 
 
-3. You can reproduce the experimental result of our method by run the scripts:
+3. You can reproduce the experimental results of our method by run the scripts:
 ```python
 bash run_glognn_sota_reproduce_small.sh
 bash run_glognn++_sota_reproduce_small.sh
