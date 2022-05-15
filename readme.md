@@ -1,7 +1,7 @@
 # GloGNN
 
-<!-- This is the official repository of paper *Finding Global Homophily in Graph Neural Networks When Meeting Heterophily*.
- -->
+This is the official repository of ICML 2022 paper *Finding Global Homophily in Graph Neural Networks When Meeting Heterophily*.
+
 ## Setup
 
 This implemetation is based on Python3. To run the code, you need the following dependencies:
