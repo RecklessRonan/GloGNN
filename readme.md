@@ -102,3 +102,17 @@ Parts of this code are based on the following repositories:
 - [LINKX](https://github.com/CUAI/Non-Homophily-Large-Scale)
 
 - [PYGCN](https://github.com/tkipf/pygcn)
+
+
+## Citation
+
+If you find this code working for you, please cite:
+
+```python
+@article{li2022finding,
+  title={Finding Global Homophily in Graph Neural Networks When Meeting Heterophily},
+  author={Li, Xiang and Zhu, Renyu and Cheng, Yao and Shan, Caihua and Luo, Siqiang and Li, Dongsheng and Qian, Weining},
+  journal={arXiv preprint arXiv:2205.07308},
+  year={2022}
+}
+```
