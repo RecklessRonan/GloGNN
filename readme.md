@@ -22,6 +22,8 @@ This implemetation is based on Python3. To run the code, you need the following 
 
 - pandas==1.1.5
 
+- struct_sim # https://github.com/susheels/gnns-and-local-assortativity/tree/main/struc_sim
+
 You can simply run 
 
 ```python
@@ -102,6 +104,8 @@ Parts of this code are based on the following repositories:
 - [LINKX](https://github.com/CUAI/Non-Homophily-Large-Scale)
 
 - [PYGCN](https://github.com/tkipf/pygcn)
+
+- [WRGAT](https://github.com/susheels/gnns-and-local-assortativity/tree/main/struc_sim)
 
 
 ## Citation
