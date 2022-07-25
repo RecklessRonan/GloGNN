@@ -281,6 +281,27 @@ def evaluate_acmgcn(model, x, adj_low, adj_high, dataset, split_idx, eval_func, 
     return train_acc, valid_acc, test_acc, out
 
 
+@torch.no_grad()
+def evaluate_wrgat(model, x, edge_index, edge_weight, edge_color, dataset, split_idx, eval_func, result=None, sampling=False, subgraph_loader=None):
+    if result is not None:
+        out = result
+    else:
+        model.eval()
+        if not sampling:
+            out = model(x, edge_index, edge_weight, edge_color)
+        else:
+            out = model.inference(dataset, subgraph_loader)
+
+    train_acc = eval_func(
+        dataset.label[split_idx['train']], out[split_idx['train']])
+    valid_acc = eval_func(
+        dataset.label[split_idx['valid']], out[split_idx['valid']])
+    test_acc = eval_func(
+        dataset.label[split_idx['test']], out[split_idx['test']])
+
+    return train_acc, valid_acc, test_acc, out
+
+
 def load_fixed_splits(dataset, sub_dataset):
     """ loads saved fixed splits for dataset
     """
